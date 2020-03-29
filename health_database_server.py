@@ -56,7 +56,7 @@ def post_add_test():
         return "Patient {} is not found on sever".format(in_dict["id"]), 
     add_result = add_test_to_patient(in_dict)
     if add_result:
-        return "Test added to patient od {}".format(in_dict["id"]), 200
+        return "Test added to patient id {}".format(in_dict["id"]), 200
     else:
         return "Unknown problem", 400
     
@@ -88,6 +88,42 @@ def add_test_to_patient(in_dict):
             print("db is {}".format(db))
             return True
     return False
+
+
+@app.route("/get_results/<patient_id>",methods =["GET"])
+def get_get_results(patient_id):
+    check_result = verify_get_results_input(patient_id)
+    if type(check_result) is str:
+        return check_result, 400
+    answer = generate_test_results_string(check_result)
+    if answer is False:
+        return "unknown error"
+    else:
+        return answer, 200
+    
+    
+def verify_get_results_input(patient_id):
+    try:
+        id = int(patient_id)
+    except ValueError:
+        return "Bad patient id in URL"
+    if is_patient_in_db(id) is False:
+        return "Patient id {} does not exist in database".format(id)
+    return id
+
+
+def generate_test_results_string(patient_id):
+    for patient in db:
+        if patient["id"] == patient_id:
+            if len(patient["tests"]) == 0:
+                return "No test results available"
+            out_string = ""
+            for test_results in patient["tests"]:
+                out_string += "{}: {}".format(test_results[0],
+                                              test_results[1])
+            return out_string
+    return False
+
 
 
 if __name__ == '__main__':
