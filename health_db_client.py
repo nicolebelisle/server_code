@@ -14,11 +14,19 @@ def add_some_patients():
         
 
 def add_test():
-    new_test - {"id":103, "test_name": "hd1", "test_result": 101}
+    new_test = {"id":103, "test_name": "hd1", "test_result": 101}
     r = requests.post(server_name+"/add_test", json=new_test)
     print(r.status_code)
     print(r.text)
-        
+
+def get_results():
+    r = requests.get(server_name+"/get_results/103")
+    if r.status_code != 200:
+        print("Error: {} - {}".format(r.status_code, r.text))
+    else:
+        print("Success {}".format(r.text))
 if __name__ == '__main__':
     add_some_patients()
+    add_test()
+    get_results()
     
